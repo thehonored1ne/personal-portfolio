@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from "vue";
-import { socials, profile } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
 import confetti from "canvas-confetti";
 
@@ -23,9 +22,65 @@ const form = ref({
     name: "",
     email: "",
     message: "",
+    _gotcha: "", // Honeypot bot trap field
 });
 
 const isClassicSubmitted = ref(false);
+const isClassicSending = ref(false);
+const lastSubmissionTime = ref<number>(0);
+const pageLoadTime = ref<number>(Date.now());
+
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || "";
+
+const sendToGoogleSheet = async (data: {
+    name: string;
+    email: string;
+    message: string;
+    _gotcha?: string;
+}) => {
+    // 1. Honeypot check: If bot filled the hidden input, pretend success and drop request
+    if (data._gotcha && data._gotcha.trim() !== "") {
+        console.warn("Honeypot triggered. Dropping automated submission.");
+        return true;
+    }
+
+    // 2. Client-side speed trap: Humans take at least 1.5s to type and submit
+    const elapsed = Date.now() - pageLoadTime.value;
+    if (elapsed < 1200) {
+        console.warn("Subhuman speed detected. Dropping submission.");
+        return true;
+    }
+
+    // 3. Client cooldown: Prevent double submits within 15 seconds
+    const now = Date.now();
+    if (now - lastSubmissionTime.value < 15000) {
+        console.warn("Rapid repeated submission throttled.");
+        return true;
+    }
+    lastSubmissionTime.value = now;
+
+    if (!GOOGLE_SCRIPT_URL) {
+        console.warn(
+            "VITE_GOOGLE_SCRIPT_URL is not set in .env. Simulating submission.",
+        );
+        return true;
+    }
+
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8",
+            },
+            body: JSON.stringify(data),
+        });
+        return true;
+    } catch (err) {
+        console.error("Failed to send message to Google Sheets:", err);
+        return false;
+    }
+};
 
 const terminalLogs = ref<TerminalLog[]>([
     { type: "cmd", text: "$ contact-dion --start" },
@@ -109,7 +164,7 @@ const setClassicMode = () => {
     currentMode.value = "classic";
 };
 
-const handleTerminalSubmit = () => {
+const handleTerminalSubmit = async () => {
     const value = terminalInput.value.trim();
 
     if (currentStep.value === "name") {
@@ -173,32 +228,34 @@ const handleTerminalSubmit = () => {
         currentStep.value = "sending";
         scrollToBottom();
 
-        // Smooth delivery simulation
-        setTimeout(() => {
-            terminalLogs.value.push({
-                type: "info",
-                text: "Delivering message to Dion...",
-            });
-            scrollToBottom();
+        terminalLogs.value.push({
+            type: "info",
+            text: "Delivering message to Dion...",
+        });
+        scrollToBottom();
 
-            setTimeout(() => {
-                currentStep.value = "sent";
-                scrollToBottom();
+        await sendToGoogleSheet({
+            name: form.value.name,
+            email: form.value.email,
+            message: form.value.message,
+            _gotcha: form.value._gotcha,
+        });
 
-                // Celebration confetti
-                confetti({
-                    particleCount: 28,
-                    spread: 55,
-                    origin: { y: 0.6 },
-                    colors: ["#22C55E", "#10B981", "#F59E0B", "#E5E5E5"],
-                });
-            }, 600);
-        }, 350);
+        currentStep.value = "sent";
+        scrollToBottom();
+
+        // Celebration confetti
+        confetti({
+            particleCount: 28,
+            spread: 55,
+            origin: { y: 0.6 },
+            colors: ["#22C55E", "#10B981", "#F59E0B", "#E5E5E5"],
+        });
     }
 };
 
 const handleRestartRunner = () => {
-    form.value = { name: "", email: "", message: "" };
+    form.value = { name: "", email: "", message: "", _gotcha: "" };
     terminalLogs.value = [
         { type: "cmd", text: "$ contact-dion --start" },
         {
@@ -211,12 +268,30 @@ const handleRestartRunner = () => {
     focusTerminalInput();
 };
 
-const handleClassicSubmit = () => {
+const handleClassicSubmit = async () => {
     if (!form.value.name || !form.value.email || !form.value.message) return;
+    isClassicSending.value = true;
+
+    await sendToGoogleSheet({
+        name: form.value.name,
+        email: form.value.email,
+        message: form.value.message,
+        _gotcha: form.value._gotcha,
+    });
+
+    isClassicSending.value = false;
     isClassicSubmitted.value = true;
+
+    confetti({
+        particleCount: 28,
+        spread: 55,
+        origin: { y: 0.6 },
+        colors: ["#22C55E", "#10B981", "#F59E0B", "#E5E5E5"],
+    });
 };
 
 onMounted(() => {
+    pageLoadTime.value = Date.now();
     focusTerminalInput();
 });
 </script>
@@ -258,93 +333,56 @@ onMounted(() => {
                                 : 'text-[#71717A] hover:text-[#121212]'
                         "
                     >
-                        Standard Form
+                        Classic Form
                     </button>
                 </div>
             </div>
 
             <p class="text-xs font-mono text-[#71717A]">
-                Project inquiries, collaborations, or general questions
+                Available for engineering roles, technical advisory &amp;
+                bespoke projects.
             </p>
         </header>
 
-        <!-- Direct Reach-out Card -->
-        <div class="p-5 rounded-xl border border-[#E5E5E5] bg-white space-y-3">
-            <div class="text-xs font-semibold text-[#121212]">
-                Direct Communication
-            </div>
-            <p class="text-xs text-[#404040] leading-relaxed">
-                I am currently {{ profile.status.toLowerCase() }}. The fastest
-                way to reach me directly is via email or social links.
-            </p>
-            <div class="flex flex-wrap gap-x-5 gap-y-2 pt-1 font-mono text-xs">
-                <a
-                    v-for="s in socials"
-                    :key="s.label"
-                    :href="s.href"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-[#404040] hover:text-[#121212] transition-colors underline underline-offset-4 decoration-[#E5E5E5] hover:decoration-[#121212]"
-                >
-                    {{ s.label }} &nearr;
-                </a>
-            </div>
-        </div>
-
-        <!-- Mode 1: Friendly Interactive Terminal -->
-        <section v-if="currentMode === 'cli'" class="space-y-3">
+        <!-- Mode 1: Interactive Terminal Runner (Default) -->
+        <section v-if="currentMode === 'cli'" class="space-y-4">
             <div
-                class="flex items-center justify-between pb-2 border-b border-[#E5E5E5]"
+                class="rounded-xl border border-[#27272A] bg-[#09090B] overflow-hidden shadow-md font-mono text-xs"
             >
-                <h2
-                    class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
-                >
-                    Interactive Message Terminal
-                </h2>
-                <span class="text-[11px] font-mono text-[#A1A1AA]">
-                    terminal prompt
-                </span>
-            </div>
-
-            <!-- Terminal Window Box -->
-            <div
-                @click="focusTerminalInput"
-                class="rounded-xl border border-[#27272A] bg-[#121214] text-[#E4E4E7] font-mono shadow-xl overflow-hidden cursor-text transition-all"
-            >
-                <!-- Window Title Bar -->
+                <!-- Terminal Top Bar -->
                 <div
-                    class="flex items-center justify-between px-4 py-2.5 bg-[#18181B] border-b border-[#27272A] select-none text-xs"
+                    class="px-4 py-3 bg-[#18181B] border-b border-[#27272A] flex items-center justify-between select-none"
                 >
-                    <!-- Window Controls (CSS Dots) -->
-                    <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-2">
                         <span
-                            class="w-3 h-3 rounded-full bg-[#EF4444]/90 inline-block"
+                            class="w-3 h-3 rounded-full bg-[#EF4444]/80 inline-block"
                         ></span>
                         <span
-                            class="w-3 h-3 rounded-full bg-[#F59E0B]/90 inline-block"
+                            class="w-3 h-3 rounded-full bg-[#F59E0B]/80 inline-block"
                         ></span>
                         <span
-                            class="w-3 h-3 rounded-full bg-[#10B981]/90 inline-block"
+                            class="w-3 h-3 rounded-full bg-[#10B981]/80 inline-block"
                         ></span>
+                        <span class="ml-2 text-[11px] text-[#A1A1AA]"
+                            >contact-runner.sh</span
+                        >
                     </div>
 
-                    <!-- Window Title -->
-                    <div class="text-[#A1A1AA] text-[11px] tracking-tight">
-                        terminal ~ contact-dion
-                    </div>
-
-                    <!-- Helper Hint -->
-                    <div class="text-[#71717A] text-[10px]">
-                        press [enter] to submit
-                    </div>
+                    <button
+                        type="button"
+                        @click="handleRestartRunner"
+                        class="text-[11px] text-[#71717A] hover:text-[#F4F4F5] transition-colors cursor-pointer"
+                        title="Reset session"
+                    >
+                        Reset
+                    </button>
                 </div>
 
-                <!-- Terminal Output & Interactive Logs -->
+                <!-- Terminal Body Stream -->
                 <div
                     ref="terminalBodyRef"
-                    class="p-4 sm:p-5 text-xs sm:text-[13px] leading-relaxed space-y-3 max-h-115 overflow-y-auto no-scrollbar"
+                    class="p-4 sm:p-5 max-h-96 overflow-y-auto space-y-3 font-mono leading-relaxed select-text"
                 >
-                    <!-- Log Lines -->
                     <div
                         v-for="(log, idx) in terminalLogs"
                         :key="idx"
@@ -355,27 +393,26 @@ onMounted(() => {
                         </div>
                         <div
                             v-if="log.sub"
-                            class="text-[#A1A1AA] text-xs font-mono pl-4"
+                            class="text-[11px] text-[#71717A] pl-2"
                         >
                             {{ log.sub }}
                         </div>
                     </div>
 
-                    <!-- Interactive Question Input Line (During name, email, message steps) -->
+                    <!-- Interactive Step Prompt -->
                     <div
-                        v-if="currentStepPrompt"
-                        class="pt-2 border-t border-[#27272A]/70 space-y-1.5"
+                        v-if="
+                            currentStepPrompt &&
+                            currentStep !== 'sending' &&
+                            currentStep !== 'sent'
+                        "
+                        class="pt-3 border-t border-[#27272A] space-y-2"
                     >
-                        <div
-                            class="flex items-center justify-between text-[#A1A1AA] text-xs"
-                        >
-                            <span class="text-[#FBBF24] font-medium">
-                                {{ currentStepPrompt.stepNumber }}:
-                                {{ currentStepPrompt.question }}
-                            </span>
+                        <div class="text-[#A1A1AA] flex items-center gap-2">
+                            <span class="text-[#38BDF8]">&gt;</span>
+                            <span>{{ currentStepPrompt.question }}</span>
                         </div>
 
-                        <!-- Input Row -->
                         <form
                             @submit.prevent="handleTerminalSubmit"
                             class="flex items-center gap-2 pt-1"
@@ -502,6 +539,25 @@ onMounted(() => {
                     Thank you for reaching out, {{ form.name }}. I will review
                     your message and reply via {{ form.email }} shortly.
                 </p>
+                <div class="pt-2">
+                    <button
+                        type="button"
+                        @click="
+                            () => {
+                                isClassicSubmitted = false;
+                                form = {
+                                    name: '',
+                                    email: '',
+                                    message: '',
+                                    _gotcha: '',
+                                };
+                            }
+                        "
+                        class="text-xs font-mono text-[#121212] underline cursor-pointer"
+                    >
+                        Send another message
+                    </button>
+                </div>
             </div>
 
             <form
@@ -509,6 +565,22 @@ onMounted(() => {
                 @submit.prevent="handleClassicSubmit"
                 class="space-y-5"
             >
+                <!-- Hidden Honeypot Input (Invisible to humans, irresistible to spam bots) -->
+                <div
+                    class="opacity-0 absolute -left-[9999px] top-0 -z-10 pointer-events-none select-none h-0 w-0 overflow-hidden"
+                    aria-hidden="true"
+                >
+                    <label for="_gotcha_hp">Leave this field blank</label>
+                    <input
+                        id="_gotcha_hp"
+                        v-model="form._gotcha"
+                        type="text"
+                        name="_gotcha"
+                        tabindex="-1"
+                        autocomplete="off"
+                    />
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Name -->
                     <div class="space-y-1.5">
@@ -555,9 +627,12 @@ onMounted(() => {
 
                 <button
                     type="submit"
-                    class="px-5 py-2.5 rounded-lg bg-[#121212] hover:bg-[#262626] text-[#FAFAFA] text-xs font-medium transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+                    :disabled="isClassicSending"
+                    class="px-5 py-2.5 rounded-lg bg-[#121212] hover:bg-[#262626] text-[#FAFAFA] text-xs font-medium transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5 disabled:opacity-50"
                 >
-                    <span>Send Message</span>
+                    <span>{{
+                        isClassicSending ? "Sending..." : "Send Message"
+                    }}</span>
                     <span>&nearr;</span>
                 </button>
             </form>
