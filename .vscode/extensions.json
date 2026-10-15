@@ -1,0 +1,4 @@
+{
+  "recommendations": ["vue.volar", "bradlc.vscode-tailwindcss"],
+  "unwantedRecommendations": ["octref.vetur"],
+}
