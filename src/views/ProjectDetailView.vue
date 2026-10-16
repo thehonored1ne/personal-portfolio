@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, RouterLink } from "vue-router";
 import { projects } from "@/data/portfolio";
 import AccordionGallery, {
     type AccordionGalleryItem,
 } from "@/components/AccordionGallery.vue";
+import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
 
 const route = useRoute();
 const slug = computed(() => route.params.slug as string);
@@ -12,6 +13,9 @@ const slug = computed(() => route.params.slug as string);
 const project = computed(() => {
     return projects.find((p) => p.slug === slug.value);
 });
+
+const container = ref<HTMLElement | null>(null);
+useStaggerEntrance(container);
 
 const galleryItems = computed<AccordionGalleryItem[]>(() => {
     if (!project.value?.images || !project.value.images.length) return [];
@@ -24,9 +28,13 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
 </script>
 
 <template>
-    <div v-if="project" class="animate-fade-in max-w-3xl mx-auto space-y-12">
+    <div
+        v-if="project"
+        ref="container"
+        class="max-w-3xl mx-auto space-y-12"
+    >
         <!-- Breadcrumb & Back Navigation -->
-        <div>
+        <div data-animate>
             <RouterLink
                 to="/"
                 class="inline-flex items-center gap-2 text-xs font-mono text-[#71717A] hover:text-[#121212] transition-colors group"
@@ -40,7 +48,7 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
         </div>
 
         <!-- Case Study Header -->
-        <header class="space-y-4 pb-8 border-b border-[#E5E5E5]">
+        <header data-animate class="space-y-4 pb-8 border-b border-[#E5E5E5]">
             <div
                 class="flex flex-wrap items-center gap-3 text-xs font-mono text-[#71717A]"
             >
@@ -97,10 +105,10 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
         </header>
 
         <!-- Overview & Contributor Ledger Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div data-animate class="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <!-- Left Column: Story & Highlights -->
             <div class="lg:col-span-8 space-y-8">
-                <section class="space-y-3">
+                <section data-animate class="space-y-3">
                     <h2
                         class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
                     >
@@ -112,7 +120,7 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
                 </section>
 
                 <!-- Key Engineering Highlights -->
-                <section class="space-y-4">
+                <section data-animate class="space-y-4">
                     <h2
                         class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
                     >
@@ -164,7 +172,7 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
                 </section>
 
                 <!-- Tech Stack Tags -->
-                <section class="space-y-3">
+                <section data-animate class="space-y-3">
                     <h2
                         class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
                     >
@@ -184,7 +192,7 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
         </div>
 
         <!-- Interface Showcase (Vue-Bits Accordion Gallery) -->
-        <section
+        <section data-animate
             v-if="galleryItems.length"
             class="space-y-4 pt-8 border-t border-[#E5E5E5]"
         >
@@ -219,7 +227,7 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
         </section>
 
         <!-- Bottom Navigation Footer -->
-        <div
+        <div data-animate
             class="pt-8 border-t border-[#E5E5E5] flex items-center justify-between"
         >
             <RouterLink

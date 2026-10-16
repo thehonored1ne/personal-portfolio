@@ -8,6 +8,7 @@ const isAnimating = ref(false);
 
 const STORAGE_KEY_LIKES = "dion_portfolio_likes_v3";
 const STORAGE_KEY_USER_LIKED = "dion_portfolio_user_liked_v3";
+const STORAGE_KEY_VISITOR_ID = "dion_portfolio_visitor_id_v1";
 
 const heartTitle = computed(() =>
     hasLiked.value ? "Unlike" : "Heart Dion's portfolio",
@@ -17,13 +18,26 @@ const heartTitle = computed(() =>
 // Set VITE_COUNTER_API_URL in .env if an adblocker-safe backend endpoint is available
 const REMOTE_ENDPOINT = import.meta.env.VITE_COUNTER_API_URL || "";
 
+const getVisitorId = () => {
+    const savedId = localStorage.getItem(STORAGE_KEY_VISITOR_ID);
+    if (savedId) return savedId;
+
+    const visitorId =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(STORAGE_KEY_VISITOR_ID, visitorId);
+    return visitorId;
+};
+
 const syncRemoteLikes = async (action: "get" | "up") => {
     if (!REMOTE_ENDPOINT) return;
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-        const url = action === "up" ? `${REMOTE_ENDPOINT}/up` : REMOTE_ENDPOINT;
+        const visitor = action === "up" ? `&visitor=${encodeURIComponent(getVisitorId())}` : "";
+        const url = `${REMOTE_ENDPOINT}?action=${action}${visitor}`;
         const res = await fetch(url, { signal: controller.signal });
         clearTimeout(timeoutId);
 
