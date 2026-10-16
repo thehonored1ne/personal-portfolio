@@ -124,8 +124,8 @@ const filteredProjects = computed(() => {
                     </div>
 
                     <!-- Name & Role Identity below the avatar in the clean white body area -->
-                    <div class="space-y-1 pt-0.5">
-                        <div class="flex items-center gap-2">
+                    <div class="space-y-1 pt-0.5 text-center">
+                        <div class="flex items-center justify-center gap-2">
                             <h1
                                 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#121212]"
                             >
@@ -150,13 +150,13 @@ const filteredProjects = computed(() => {
 
                 <!-- Bio Paragraph -->
                 <p
-                    class="text-xs sm:text-sm text-[#404040] leading-relaxed max-w-sm"
+                    class="text-xs sm:text-sm text-[#404040] leading-relaxed max-w-sm mx-auto text-justify"
                 >
                     {{ profile.bio }}
                 </p>
 
                 <!-- Download CV Action -->
-                <div class="pt-0.5">
+                <div class="pt-0.5 flex justify-center">
                     <a
                         href="/dion-areglo-cv.pdf"
                         download="Dion-Areglo-CV.pdf"

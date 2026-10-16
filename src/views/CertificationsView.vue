@@ -3,8 +3,11 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { certifications, type CertificationItem } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
 import { Eye, ExternalLink, X, ShieldCheck } from "@lucide/vue";
+import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
 
 const activeCert = ref<CertificationItem | null>(null);
+const container = ref<HTMLElement | null>(null);
+useStaggerEntrance(container);
 
 const openCertModal = (cert: CertificationItem) => {
     activeCert.value = cert;
@@ -39,9 +42,9 @@ const getIssuerLogo = (issuer: string) => {
 </script>
 
 <template>
-    <div class="animate-fade-in max-w-2xl mx-auto space-y-10">
+    <div ref="container" class="max-w-2xl mx-auto space-y-10">
         <!-- Header -->
-        <header class="space-y-2">
+        <header data-animate class="space-y-2">
             <h1
                 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#121212]"
             >
@@ -58,6 +61,7 @@ const getIssuerLogo = (issuer: string) => {
             <article
                 v-for="cert in certifications"
                 :key="cert.credentialId || cert.title"
+                data-animate
                 class="p-5 sm:p-6 rounded-2xl border border-[#E5E5E5] bg-white space-y-4 hover:border-[#121212] transition-all shadow-2xs group"
             >
                 <!-- Header with Issuer Badge & Title -->
@@ -223,7 +227,7 @@ const getIssuerLogo = (issuer: string) => {
         </div>
 
         <!-- Return Link -->
-        <div class="pt-4 border-t border-[#E5E5E5]">
+        <div data-animate class="pt-4 border-t border-[#E5E5E5]">
             <RouterLink
                 to="/"
                 class="inline-flex items-center gap-1.5 text-xs font-mono text-[#71717A] hover:text-[#121212] transition-colors"

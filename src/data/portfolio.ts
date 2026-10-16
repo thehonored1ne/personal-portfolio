@@ -1,10 +1,95 @@
 import avatarImg from "@/assets/avatar.webp";
 import bannerImg from "@/assets/banner1.webp";
+import projectPlaceholder from "@/assets/projects_images/placeholder_image.png";
+import certPlaceholder from "@/assets/certifications/placeholder_image.png";
+
+const projectImageFiles = import.meta.glob(
+  "/src/assets/projects_images/**/*.{png,jpg,jpeg,webp}",
+  {
+    eager: true,
+    import: "default",
+  },
+) as Record<string, string>;
+
+const certificateImageFiles = import.meta.glob(
+  "/src/assets/certifications/**/*.{png,jpg,jpeg,webp}",
+  {
+    eager: true,
+    import: "default",
+  },
+) as Record<string, string>;
 
 export interface ProjectImage {
   url: string;
   caption: string;
 }
+
+type ProjectImageEntry = {
+  file: string;
+  caption: string;
+};
+
+const getProjectImages = (entries: ProjectImageEntry[]): ProjectImage[] =>
+  entries.map(({ file, caption }) => ({
+    url:
+      projectImageFiles[`/src/assets/projects_images/${file}`] ??
+      projectPlaceholder,
+    caption,
+  }));
+
+const getCertificateImage = (file: string): string =>
+  certificateImageFiles[`/src/assets/certifications/${file}`] ?? certPlaceholder;
+
+const projectImageData: Record<string, ProjectImageEntry[]> = {
+  "linear-ui-clone": [
+    {
+      file: "placeholder_image.png",
+      caption: "Main active issue list with keyboard shortcut indicators",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Real-time command menu and filter engine",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Sprint planning boards and velocity metrics",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Dark-mode cycle telemetry and performance charts",
+    },
+  ],
+  "oxide-syntax": [
+    {
+      file: "placeholder_image.png",
+      caption: "TypeScript syntax highlight showing subtle token differentiation",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Calibrated contrast ratios across dark palette tokens",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Markdown preview and terminal integrated styling",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Multi-IDE token export preview",
+    },
+  ],
+  "tokens-engine": [
+    { file: "placeholder_image.png", caption: "AST token extraction preview" },
+    { file: "placeholder_image.png", caption: "Figma synchronization pipeline" },
+    { file: "placeholder_image.png", caption: "CSS custom properties output" },
+    { file: "placeholder_image.png", caption: "Tree-shaking benchmark analysis" },
+  ],
+  typewriter: [
+    { file: "placeholder_image.png", caption: "Focused document canvas" },
+    { file: "placeholder_image.png", caption: "Distraction-free writing environment" },
+    { file: "placeholder_image.png", caption: "Local SQLite database inspector" },
+    { file: "placeholder_image.png", caption: "Offline synchronization ledger" },
+  ],
+};
 
 export interface ProjectContributor {
   name: string;
@@ -96,24 +181,7 @@ export const projects: Project[] = [
     tags: ["Vue 3", "TypeScript", "Tailwind", "Pinia"],
     liveUrl: "https://linear-clone.example.com",
     githubUrl: "https://github.com/example/linear-ui-clone",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80",
-        caption: "Main active issue list with keyboard shortcut indicators",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
-        caption: "Real-time command menu and filter engine",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&q=80",
-        caption: "Sprint planning boards & velocity metrics",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
-        caption: "Dark-mode cycle telemetry & performance charts",
-      },
-    ],
+    images: getProjectImages(projectImageData["linear-ui-clone"]),
     highlights: [
       "Engineered keyboard navigation engine with vim-like bindings and 0ms perceive latency.",
       "Optimistic UI updates with instant rollback on WebSocket network failure.",
@@ -132,25 +200,7 @@ export const projects: Project[] = [
     tags: ["VS Code", "Design System", "Tokens"],
     liveUrl: "https://marketplace.visualstudio.com/items?itemName=oxide-syntax",
     githubUrl: "https://github.com/example/oxide-syntax",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
-        caption:
-          "TypeScript syntax highlight showing subtle token differentiation",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
-        caption: "Calibrated contrast ratios across dark palette tokens",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
-        caption: "Markdown preview & terminal integrated styling",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80",
-        caption: "Multi-IDE token export preview",
-      },
-    ],
+    images: getProjectImages(projectImageData["oxide-syntax"]),
     highlights: [
       "Surpassed 45,000+ active installs on the Visual Studio Code Marketplace with 4.9-star rating.",
       "WCAG 2.1 AAA compliant contrast thresholds across all token tiers.",
@@ -169,24 +219,7 @@ export const projects: Project[] = [
     tags: ["Vite", "AST", "Node.js", "CLI"],
     liveUrl: "https://tokens-engine.dev",
     githubUrl: "https://github.com/example/tokens-engine",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
-        caption: "AST token extraction and terminal diff preview",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80",
-        caption: "Figma REST API synchronization pipeline",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80",
-        caption: "CSS custom properties compilation output",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-        caption: "Zero-runtime tree-shaking benchmark analysis",
-      },
-    ],
+    images: getProjectImages(projectImageData["tokens-engine"]),
     highlights: [
       "Compiles design tokens directly from Figma REST API into strongly typed TS variables.",
       "Generates zero-runtime atomic CSS utility classes with automatic tree-shaking.",
@@ -205,24 +238,7 @@ export const projects: Project[] = [
     tags: ["Vue 3", "Wasm", "PWA", "SQLite"],
     liveUrl: "https://typewriter.example.com",
     githubUrl: "https://github.com/example/typewriter",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1200&q=80",
-        caption: "Focused document canvas in typography mode",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80",
-        caption: "Distraction-free zen writing environment",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200&q=80",
-        caption: "Local SQLite Wasm database inspector",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
-        caption: "Offline PWA synchronization ledger",
-      },
-    ],
+    images: getProjectImages(projectImageData.typewriter),
     highlights: [
       "Local-first persistence using SQLite compiled to WebAssembly with zero server dependencies.",
       "Instant document search powered by in-browser fuzzy indexing.",
@@ -301,8 +317,7 @@ export const certifications: CertificationItem[] = [
     skills: ["Vue", "React", "State Management", "Accessibility (a11y)"],
     credentialId: "META-FE-98421",
     credentialUrl: "https://coursera.org",
-    image:
-      "https://images.unsplash.com/photo-1607799279861-4dd421887fb3?auto=format&fit=crop&w=1400&q=85",
+    image: getCertificateImage("placeholder_image.png"),
   },
   {
     title: "TypeScript Professional Certification",
@@ -313,8 +328,7 @@ export const certifications: CertificationItem[] = [
     skills: ["TypeScript", "Generics", "Type Systems", "Compiler API"],
     credentialId: "TS-PRO-44219",
     credentialUrl: "https://typescriptlang.org",
-    image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=85",
+    image: getCertificateImage("placeholder_image.png"),
   },
   {
     title: "AWS Certified Cloud Practitioner",
@@ -325,14 +339,13 @@ export const certifications: CertificationItem[] = [
     skills: ["AWS", "S3", "CloudFront", "Serverless"],
     credentialId: "AWS-CCP-10924",
     credentialUrl: "https://aws.amazon.com",
-    image:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=85",
+    image: getCertificateImage("placeholder_image.png"),
   },
 ];
 
 export const socials: SocialLink[] = [
   { label: "GitHub", href: "https://github.com/dionareglo" },
   { label: "LinkedIn", href: "https://linkedin.com/in/dionareglo" },
-  { label: "Twitter / X", href: "https://x.com/dionareglo" },
+  { label: "Facebook", href: "https://facebook.com/dionareglo" },
   { label: "Email", href: "mailto:dion@example.com" },
 ];

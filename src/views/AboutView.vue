@@ -1,6 +1,30 @@
 <script setup lang="ts">
 import { profile, socials } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
+import { ref } from "vue";
+import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
+
+const container = ref<HTMLElement | null>(null);
+useStaggerEntrance(container);
+
+const currentActivities = [
+    {
+        label: "Building",
+        detail: "Resilient web applications, zero-runtime design token tooling, and keyboard-first user interfaces.",
+    },
+    {
+        label: "Exploring",
+        detail: "Local-first software architectures, SQLite compiled to WebAssembly, and sub-50ms interaction latency.",
+    },
+    {
+        label: "Studying",
+        detail: "Typography history, optical kerning rules, and quiet, distraction-free interface design.",
+    },
+    {
+        label: "Status",
+        detail: profile.status,
+    },
+];
 
 const principles = [
     {
@@ -31,21 +55,23 @@ const stack = [
 </script>
 
 <template>
-    <div class="animate-fade-in max-w-2xl mx-auto space-y-12">
+    <div ref="container" class="max-w-2xl mx-auto space-y-12">
         <!-- Header -->
-        <header class="space-y-2">
+        <header data-animate class="space-y-2">
             <h1
                 class="text-2xl sm:text-3xl font-semibold tracking-tight text-[#121212]"
             >
-                About
+                About Me
             </h1>
             <p class="text-xs font-mono text-[#71717A]">
-                Background, values & tools
+                Background, current focus & values
             </p>
         </header>
 
         <!-- Bio / Story -->
-        <section class="space-y-3.5 text-sm text-[#404040] leading-relaxed">
+        <section data-animate
+            class="space-y-3.5 text-sm text-[#404040] leading-relaxed text-justify"
+        >
             <p>
                 I'm {{ profile.name }}, a
                 {{ profile.role.toLowerCase() }} currently based in
@@ -55,7 +81,8 @@ const stack = [
                 I focus on developing resilient web applications and robust
                 design systems. My work lives at the intersection of aesthetic
                 discipline and engineering performance—ensuring interfaces feel
-                instant, look considered, and scale gracefully.
+                instant, look considered, and scale gracefully without
+                superfluous complexity.
             </p>
             <p>
                 When away from the editor, I research typography, contribute to
@@ -63,8 +90,47 @@ const stack = [
             </p>
         </section>
 
+        <!-- What I'm Doing Now -->
+        <section data-animate class="space-y-4">
+            <div
+                class="pb-2.5 border-b border-[#E5E5E5] flex items-center justify-between"
+            >
+                <h2
+                    class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
+                >
+                    What I'm Doing Now
+                </h2>
+                <span
+                    class="inline-flex items-center gap-1.5 text-[11px] font-mono text-[#71717A]"
+                >
+                    <span
+                        class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+                    ></span>
+                    Active
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                <div
+                    v-for="item in currentActivities"
+                    :key="item.label"
+                    data-animate
+                    class="grid grid-cols-1 sm:grid-cols-4 gap-1 sm:gap-4 items-baseline"
+                >
+                    <span class="text-xs font-mono font-medium text-[#121212]">
+                        {{ item.label }}
+                    </span>
+                    <p
+                        class="text-xs text-[#404040] leading-relaxed sm:col-span-3 text-justify"
+                    >
+                        {{ item.detail }}
+                    </p>
+                </div>
+            </div>
+        </section>
+
         <!-- Principles -->
-        <section class="space-y-4">
+        <section data-animate class="space-y-4">
             <div class="pb-2.5 border-b border-[#E5E5E5]">
                 <h2
                     class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
@@ -77,12 +143,15 @@ const stack = [
                 <div
                     v-for="principle in principles"
                     :key="principle.title"
+                    data-animate
                     class="space-y-1"
                 >
                     <div class="text-sm font-medium text-[#121212]">
                         {{ principle.title }}
                     </div>
-                    <p class="text-xs text-[#404040] leading-relaxed">
+                    <p
+                        class="text-xs text-[#404040] leading-relaxed text-justify"
+                    >
                         {{ principle.description }}
                     </p>
                 </div>
@@ -90,7 +159,7 @@ const stack = [
         </section>
 
         <!-- Tooling -->
-        <section class="space-y-3">
+        <section data-animate class="space-y-3">
             <div class="pb-2.5 border-b border-[#E5E5E5]">
                 <h2
                     class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
@@ -103,6 +172,7 @@ const stack = [
                 <span
                     v-for="tech in stack"
                     :key="tech"
+                    data-animate
                     class="px-2.5 py-1 rounded bg-[#F4F4F5] border border-[#E5E5E5] text-xs font-mono text-[#404040]"
                 >
                     {{ tech }}
@@ -110,15 +180,16 @@ const stack = [
             </div>
         </section>
 
-        <!-- Contact Details -->
-        <section class="space-y-3 pt-6 border-t border-[#E5E5E5]">
+        <!-- Keep in touch -->
+        <section data-animate class="space-y-3 pt-6 border-t border-[#E5E5E5]">
             <div
                 class="text-xs font-mono uppercase tracking-wider text-[#71717A]"
             >
-                Get in touch
+                Keep in touch
             </div>
-            <p class="text-xs text-[#404040] leading-relaxed">
-                Feel free to reach out for project inquiries or discussion:
+            <p class="text-xs text-[#404040] leading-relaxed text-justify">
+                Feel free to reach out for collaborations, project inquiries, or
+                discussion:
             </p>
             <div class="flex flex-wrap gap-x-5 gap-y-2 pt-1">
                 <a
@@ -142,7 +213,7 @@ const stack = [
         </section>
 
         <!-- Return Link -->
-        <div class="pt-4 border-t border-[#E5E5E5]">
+        <div data-animate class="pt-4 border-t border-[#E5E5E5]">
             <RouterLink
                 to="/"
                 class="inline-flex items-center gap-1.5 text-xs font-mono text-[#71717A] hover:text-[#121212] transition-colors"
