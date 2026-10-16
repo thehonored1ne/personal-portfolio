@@ -1,5 +1,11 @@
 ﻿import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
+import AboutView from "@/views/AboutView.vue";
+import ExperienceView from "@/views/ExperienceView.vue";
+import EducationView from "@/views/EducationView.vue";
+import CertificationsView from "@/views/CertificationsView.vue";
+import ContactView from "@/views/ContactView.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 import { projects } from "@/data/portfolio";
 
 const siteUrl = "https://dionareglo.dev";
@@ -16,31 +22,31 @@ const routes = [
   {
     path: "/about",
     name: "about",
-    component: () => import("@/views/AboutView.vue"),
+    component: AboutView,
     meta: { title: "About", description: "Background, values, and current focus of Dion Areglo." },
   },
   {
     path: "/experience",
     name: "experience",
-    component: () => import("@/views/ExperienceView.vue"),
+    component: ExperienceView,
     meta: { title: "Experience", description: "Career timeline and technical contributions by Dion Areglo." },
   },
   {
     path: "/education",
     name: "education",
-    component: () => import("@/views/EducationView.vue"),
+    component: EducationView,
     meta: { title: "Education", description: "Academic background, foundation, and studies of Dion Areglo." },
   },
   {
     path: "/certifications",
     name: "certifications",
-    component: () => import("@/views/CertificationsView.vue"),
+    component: CertificationsView,
     meta: { title: "Certifications", description: "Verified credentials and technical accreditations earned by Dion Areglo." },
   },
   {
     path: "/contact",
     name: "contact",
-    component: () => import("@/views/ContactView.vue"),
+    component: ContactView,
     meta: { title: "Contact", description: "Get in touch with Dion Areglo for collaborations and project inquiries." },
   },
   {
@@ -51,7 +57,7 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "not-found",
-    component: () => import("@/views/NotFoundView.vue"),
+    component: NotFoundView,
     meta: {
       title: "Page Not Found",
       description: "The page you requested could not be found.",
