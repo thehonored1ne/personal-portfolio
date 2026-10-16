@@ -3,6 +3,15 @@ import { profile, socials } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
 import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
+import CircularGallery from "@/components/CircularGallery.vue";
+import Img1 from "@/assets/aboutme_images/img1.jpg";
+import Img2 from "@/assets/aboutme_images/img2.jpg";
+import Img3 from "@/assets/aboutme_images/img3.jpg";
+import Img4 from "@/assets/aboutme_images/img4.jpg";
+import Img5 from "@/assets/aboutme_images/img5.jpg";
+import Img6 from "@/assets/aboutme_images/img6.jpg";
+import Img7 from "@/assets/aboutme_images/img7.jpg";
+import Img8 from "@/assets/aboutme_images/avatar.webp";
 
 const container = ref<HTMLElement | null>(null);
 useStaggerEntrance(container);
@@ -10,15 +19,15 @@ useStaggerEntrance(container);
 const currentActivities = [
     {
         label: "Building",
-        detail: "Resilient web applications, zero-runtime design token tooling, and keyboard-first user interfaces.",
+        detail: "Web Applications, Open Source AI Tools, Web Systems, Npm Package.",
     },
     {
         label: "Exploring",
-        detail: "Local-first software architectures, SQLite compiled to WebAssembly, and sub-50ms interaction latency.",
+        detail: "AI Engineering, Open Source Tools, Agentic Development",
     },
     {
         label: "Studying",
-        detail: "Typography history, optical kerning rules, and quiet, distraction-free interface design.",
+        detail: "UIUX design princples, Typography, Agent Orchestration",
     },
     {
         label: "Status",
@@ -28,29 +37,49 @@ const currentActivities = [
 
 const principles = [
     {
-        title: "Ergonomics over novelty",
+        title: "Clean Architecture First",
         description:
-            "Tools should get out of the way. Prioritize keyboard shortcuts, sub-100ms response times, and intuitive layout over decorative excess.",
+            "I structure projects with clear separation of concerns to keep codebases scalable, maintainable, and easy to extend.",
     },
     {
-        title: "Typographic hierarchy",
+        title: "Function Over Friction",
         description:
-            "Clear hierarchy communicates structure before text is read. Restrain font weights and rely on spacing and tonal contrast.",
+            "I prioritize fast load times, intuitive navigation, and smooth user interactions over unnecessary visual clutter.",
     },
     {
-        title: "Quiet craftsmanship",
+        title: "Data-Driven Precision",
         description:
-            "Hairline dividers, tactile hover micro-transitions, and calm palette choices yield enduring software that remains enjoyable over time.",
+            "I design systems and workflows around structured data models to ensure accuracy, reliable performance, and smooth API integration.",
+    },
+    {
+        title: "Purposeful Craftsmanship",
+        description:
+            "I write readable, self-documenting code and build interfaces designed to solve practical real-world problems.",
     },
 ];
 
 const stack = [
-    "Vue 3 (Composition API)",
-    "TypeScript",
+    "HTML",
+    "Javascript",
     "Tailwind CSS v4",
-    "Vite",
-    "Node.js",
+    "PHP",
+    "Laravel",
     "Git & GitHub",
+    "MySql",
+    "Css",
+    "Antigravity",
+    "Zed",
+];
+
+const aboutGalleryItems = [
+    { image: Img1, text: "Sysarc Defended!" },
+    { image: Img2, text: "Kunyari Stolen" },
+    { image: Img3, text: "Museum Shot" },
+    { image: Img4, text: "Capstone Defended1" },
+    { image: Img5, text: "Cloud 9 Antipolo" },
+    { image: Img6, text: "CCS NC2 Passer" },
+    { image: Img7, text: "Kabado sa panel" },
+    { image: Img8, text: "Portrait" },
 ];
 </script>
 
@@ -68,8 +97,23 @@ const stack = [
             </p>
         </header>
 
+        <section data-animate class="-mx-2 sm:-mx-6 space-y-3">
+            <div class="h-[280px] sm:h-[360px] w-full">
+                <CircularGallery
+                    :items="aboutGalleryItems"
+                    :bend="2"
+                    text-color="#121212"
+                    :border-radius="0.08"
+                    font="600 18px Geist Mono"
+                    :scroll-speed="2"
+                    :scroll-ease="0.06"
+                />
+            </div>
+        </section>
+
         <!-- Bio / Story -->
-        <section data-animate
+        <section
+            data-animate
             class="space-y-3.5 text-sm text-[#404040] leading-relaxed text-justify"
         >
             <p>

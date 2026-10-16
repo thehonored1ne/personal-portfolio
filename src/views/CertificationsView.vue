@@ -4,6 +4,7 @@ import { certifications, type CertificationItem } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
 import { Eye, ExternalLink, X, ShieldCheck } from "@lucide/vue";
 import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
+import tesdaLogo from "@/assets/certifications/tesda-logo.png";
 
 const activeCert = ref<CertificationItem | null>(null);
 const container = ref<HTMLElement | null>(null);
@@ -69,11 +70,18 @@ const getIssuerLogo = (issuer: string) => {
                     <div class="flex items-start gap-3.5 min-w-0">
                         <!-- Issuer Official Icon Badge -->
                         <div
-                            class="w-10 h-10 rounded-xl bg-[#F4F4F5] border border-[#E5E5E5] flex items-center justify-center shrink-0 p-2 group-hover:border-[#121212] transition-colors"
+                            class="w-12 h-12 rounded-xl bg-[#F4F4F5] border border-[#E5E5E5] flex items-center justify-center shrink-0 p-1.5 group-hover:border-[#121212] transition-colors"
                         >
+                            <img
+                                v-if="cert.issuer.includes('TESDA')"
+                                :src="tesdaLogo"
+                                alt="TESDA"
+                                class="w-full h-full object-contain scale-125"
+                            />
+
                             <!-- Meta Logo -->
                             <svg
-                                v-if="getIssuerLogo(cert.issuer) === 'meta'"
+                                v-else-if="getIssuerLogo(cert.issuer) === 'meta'"
                                 viewBox="0 0 24 24"
                                 class="w-6 h-6"
                                 fill="#0064E0"

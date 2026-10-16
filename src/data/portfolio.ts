@@ -38,56 +38,81 @@ const getProjectImages = (entries: ProjectImageEntry[]): ProjectImage[] =>
   }));
 
 const getCertificateImage = (file: string): string =>
-  certificateImageFiles[`/src/assets/certifications/${file}`] ?? certPlaceholder;
+  certificateImageFiles[`/src/assets/certifications/${file}`] ??
+  certPlaceholder;
 
 const projectImageData: Record<string, ProjectImageEntry[]> = {
-  "linear-ui-clone": [
+  "evaluation-system": [
     {
-      file: "placeholder_image.png",
-      caption: "Main active issue list with keyboard shortcut indicators",
+      file: "evaluation-system/admin-dashboard.webp",
+      caption:
+        "Administrator dashboard with evaluation progress and department completion charts",
     },
     {
-      file: "placeholder_image.png",
-      caption: "Real-time command menu and filter engine",
+      file: "evaluation-system/evaluation-form.webp",
+      caption:
+        "Evaluation form for rating performance across subject disciplines",
     },
     {
-      file: "placeholder_image.png",
-      caption: "Sprint planning boards and velocity metrics",
+      file: "evaluation-system/evaluator-dashboard.webp",
+      caption:
+        "Evaluator dashboard with submitted evaluations and review status",
     },
     {
-      file: "placeholder_image.png",
-      caption: "Dark-mode cycle telemetry and performance charts",
-    },
-  ],
-  "oxide-syntax": [
-    {
-      file: "placeholder_image.png",
-      caption: "TypeScript syntax highlight showing subtle token differentiation",
-    },
-    {
-      file: "placeholder_image.png",
-      caption: "Calibrated contrast ratios across dark palette tokens",
-    },
-    {
-      file: "placeholder_image.png",
-      caption: "Markdown preview and terminal integrated styling",
-    },
-    {
-      file: "placeholder_image.png",
-      caption: "Multi-IDE token export preview",
+      file: "evaluation-system/welcome-page.webp",
+      caption: "Online evaluation welcome and login page",
     },
   ],
-  "tokens-engine": [
-    { file: "placeholder_image.png", caption: "AST token extraction preview" },
-    { file: "placeholder_image.png", caption: "Figma synchronization pipeline" },
-    { file: "placeholder_image.png", caption: "CSS custom properties output" },
-    { file: "placeholder_image.png", caption: "Tree-shaking benchmark analysis" },
+  "memory-vault": [
+    {
+      file: "memory-vault/github-view.webp",
+      caption: "GitHub repository overview for the Agent Memory Vault package",
+    },
+    {
+      file: "memory-vault/npm-readme-view.webp",
+      caption: "NPM package README with the memory architecture overview",
+    },
+    {
+      file: "memory-vault/npm-code.webp",
+      caption: "NPM source code view for the published package",
+    },
+    {
+      file: "memory-vault/npm-version.webp",
+      caption: "NPM version history and package release details",
+    },
+  ],
+  "payday-splitter": [
+    {
+      file: "payday-splitter/first-page.webp",
+      caption: "Payday Splitter dashboard with pay cycle and budget presets",
+    },
+    {
+      file: "payday-splitter/breakdown.webp",
+      caption: "Full month breakdown with budget split visualization",
+    },
+    {
+      file: "payday-splitter/cuts-nethome.webp",
+      caption: "Net take-home summary with statutory deductions and bonus insight",
+    },
+    {
+      file: "payday-splitter/mobile-view.webp",
+      caption: "Responsive mobile view for calculating monthly pay",
+    },
   ],
   typewriter: [
     { file: "placeholder_image.png", caption: "Focused document canvas" },
-    { file: "placeholder_image.png", caption: "Distraction-free writing environment" },
-    { file: "placeholder_image.png", caption: "Local SQLite database inspector" },
-    { file: "placeholder_image.png", caption: "Offline synchronization ledger" },
+    {
+      file: "placeholder_image.png",
+      caption: "Distraction-free writing environment",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Local SQLite database inspector",
+    },
+    {
+      file: "placeholder_image.png",
+      caption: "Offline synchronization ledger",
+    },
   ],
 };
 
@@ -125,8 +150,9 @@ export interface ExperienceItem {
 
 export interface EducationItem {
   institution: string;
-  degree: string;
+  degree?: string;
   field?: string;
+  strand?: string;
   period: string;
   location?: string;
   honors?: string;
@@ -164,65 +190,72 @@ export const profile = {
 
 export const projects: Project[] = [
   {
-    slug: "linear-ui-clone",
-    title: "Linear UI Clone",
+    slug: "360-evaluation-system",
+    title: "360 Degree Evaluation System with NLP",
     tagline:
-      "High-performance task management interface with keyboard-first workflows.",
+      "AI-powered performance evaluations with real-time feedback analysis.",
     description:
-      "A client-ready recreation of Linear desktop experience focusing on sub-50ms interaction latency, optimistic state mutations, and a complete command palette navigation architecture.",
+      "A web platform that automates faculty and staff performance reviews. The system collects feedback from multiple sources and uses natural language processing to analyze written comments. It turns unstructured feedback into clear scores and insights.",
     category: "Web Application",
-    year: "2024",
-    role: "Lead Frontend Engineer",
+    year: "2026",
+    role: "Lead Developer Engineer",
     team: [
-      { name: "Dion Areglo", role: "Frontend & Architecture" },
-      { name: "Sarah Chen", role: "Product Design" },
-      { name: "David Kim", role: "API & Realtime Sync" },
+      { name: "Dion Areglo", role: "Lead Developer" },
+      { name: "Florenz Deonila", role: "Product Design & QA Testing" },
+      { name: "Hazel Convicto", role: "Testing & Documentation" },
+      { name: "Christine Capina", role: "Testing & Documentation" },
+      { name: "Mark Benjie Arabe", role: "Presenting & Documentation" },
     ],
-    tags: ["Vue 3", "TypeScript", "Tailwind", "Pinia"],
-    liveUrl: "https://linear-clone.example.com",
-    githubUrl: "https://github.com/example/linear-ui-clone",
-    images: getProjectImages(projectImageData["linear-ui-clone"]),
+    tags: ["Laravel", "Livewire", "Tailwind", "AlphineJS", "Flask", "Python"],
+    liveUrl: "https://grc-online-eval.up.railway.app/",
+    githubUrl: "https://github.com/thehonored1ne/EvaluationSystemCapstone",
+    images: getProjectImages(projectImageData["evaluation-system"]),
     highlights: [
-      "Engineered keyboard navigation engine with vim-like bindings and 0ms perceive latency.",
-      "Optimistic UI updates with instant rollback on WebSocket network failure.",
-      "Comprehensive virtual scroll system rendering 10,000+ issues without frame degradation.",
-    ],
-  },
-  {
-    slug: "oxide-syntax",
-    title: "Oxide Syntax",
-    tagline: "Minimalist code editor color scheme for optical comfort.",
-    description:
-      "A precision-engineered dark theme focused on reducing cognitive eye fatigue during extended coding sessions through calibrated contrast ratios and semantic token separation.",
-    category: "Design Tooling",
-    year: "2024",
-    role: "Designer & Maintainer",
-    tags: ["VS Code", "Design System", "Tokens"],
-    liveUrl: "https://marketplace.visualstudio.com/items?itemName=oxide-syntax",
-    githubUrl: "https://github.com/example/oxide-syntax",
-    images: getProjectImages(projectImageData["oxide-syntax"]),
-    highlights: [
-      "Surpassed 45,000+ active installs on the Visual Studio Code Marketplace with 4.9-star rating.",
-      "WCAG 2.1 AAA compliant contrast thresholds across all token tiers.",
-      "Automated design token generation pipeline compiling themes across 5 IDE platforms.",
+      "The platform collects reviews from peers, supervisors, and subordinates in one place.",
+      "Integrated NLP models score sentiment and extract key themes from written feedback.",
+      "Real-time reporting engine generates instant performance summaries and score breakdowns.",
+      "Role-based dashboards keep sensitive data secure for teachers, staff, and management.",
     ],
   },
   {
-    slug: "tokens-engine",
-    title: "Tokens Engine",
-    tagline: "Zero-runtime design token extraction and CSS compiler.",
+    slug: "memory-vault",
+    title: "Agent Memory Vault NPM Package",
+    tagline: "Persistent local memory for AI coding agents.",
     description:
-      "A lightweight CLI utility that converts design tokens across Figma, CSS custom properties, and TypeScript declarations without bundling overhead.",
-    category: "Open Source",
-    year: "2023",
-    role: "Author",
-    tags: ["Vite", "AST", "Node.js", "CLI"],
-    liveUrl: "https://tokens-engine.dev",
-    githubUrl: "https://github.com/example/tokens-engine",
-    images: getProjectImages(projectImageData["tokens-engine"]),
+      "A zero-dependency NPM package that gives AI coding agents a local, persistent memory layer. It helps preserve project context, reduce repeated explanations, and keep useful decisions available across sessions.",
+    category: "NPM Package",
+    year: "2026",
+    role: "Developer & Maintainer",
+    tags: ["NPM", "Python", "Javascript", "Sqlite", "Obsidian"],
+    liveUrl: "https://www.npmjs.com/package/agent-memory-vault",
+    githubUrl: "https://github.com/thehonored1ne/agent-memory-vault",
+    images: getProjectImages(projectImageData["memory-vault"]),
     highlights: [
-      "Compiles design tokens directly from Figma REST API into strongly typed TS variables.",
-      "Generates zero-runtime atomic CSS utility classes with automatic tree-shaking.",
+      "Stores project memory locally so agents can retain context across coding sessions.",
+      "Uses a zero-dependency architecture designed to stay portable and easy to install from NPM.",
+      "Provides a structured source of truth for decisions, instructions, and reusable project knowledge.",
+      "Published with GitHub source, README documentation, release history, and an MIT license.",
+    ],
+  },
+  {
+    slug: "payday-splitter",
+    title: "Payday Splitter",
+    tagline: "A simple Philippine payroll and budget planning calculator.",
+    description:
+      "A web-based payroll calculator that estimates monthly take-home pay, statutory deductions, budget allocations, savings, emergency funds, and 13th month pay using Philippine payroll rules.",
+    category: "Web Application",
+    year: "2025",
+    role: "Developer & Maintainer",
+    tags: ["HTML", "CSS", "JavaScript", "Vercel"],
+    liveUrl: "https://payday-splitter.vercel.app/",
+    githubUrl: "https://github.com/thehonored1ne/PaydaySplitter",
+    images: getProjectImages(projectImageData["payday-splitter"]),
+    highlights: [
+      "Supports full-month and half-month pay cycle calculations.",
+      "Provides configurable budget presets for needs, wants, emergency funds, and savings.",
+      "Calculates common Philippine deductions including SSS, PhilHealth, Pag-IBIG, and income tax.",
+      "Includes responsive layouts for desktop and mobile payroll planning.",
+      "Estimates 13th month pay and presents an exportable breakdown of the results.",
     ],
   },
   {
@@ -248,97 +281,100 @@ export const projects: Project[] = [
 
 export const experience: ExperienceItem[] = [
   {
-    company: "Vercel Ecosystem",
-    role: "Frontend Engineer",
-    period: "2023 — Present",
-    location: "Remote",
-    description:
-      "Developing high-performance design system interfaces, micro-frontends, and accessible components across developer platforms.",
-    achievements: [
-      "Engineered core components reducing bundle payload by 28% across high-traffic marketing sites.",
-      "Implemented fluid keyboard-driven command navigation patterns across internal tooling.",
-    ],
-    technologies: ["Vue 3", "TypeScript", "Tailwind CSS", "Vite", "Next.js"],
-    href: "https://vercel.com",
-  },
-  {
-    company: "Supabase Studio",
-    role: "UI / UX Engineer",
-    period: "2022 — 2023",
-    location: "Remote",
-    description:
-      "Designed and maintained developer-facing database inspection tables, query editors, and authentication management consoles.",
-    achievements: [
-      "Architected real-time row-level security policy builder with live preview.",
-      "Maintained zero accessibility violations across table data grids using WAI-ARIA guidelines.",
-    ],
-    technologies: ["Vue 3", "TypeScript", "Tailwind CSS", "PostgreSQL"],
-    href: "https://supabase.com",
-  },
-  {
-    company: "Resonance Design",
-    role: "Junior Interface Engineer",
-    period: "2021 — 2022",
+    company: "Academic and Independent Projects",
+    role: "Full-Stack Developer",
+    period: "Ongoing",
     location: "Manila, Philippines",
     description:
-      "Built custom client websites and digital brand platforms with high-touch interaction design.",
+      "Developed practical software projects for academic and independent work, including a 360-degree evaluation system with automated reporting and NLP-assisted feedback analysis.",
     achievements: [
-      "Delivered 12+ bespoke client web experiences with 100/100 Lighthouse performance scores.",
+      "Built a role-based evaluation platform that collects feedback from peers, supervisors, and subordinates.",
+      "Implemented dashboards for evaluation progress, completion rates, feedback summaries, and generated reports.",
+      "Connected a Laravel and Livewire application with a Python NLP service for written feedback analysis.",
+      "Worked across development, testing, documentation, and project presentation responsibilities.",
     ],
-    technologies: ["JavaScript", "HTML/CSS", "Tailwind CSS", "Figma"],
+    technologies: ["Laravel", "Livewire", "Tailwind CSS", "Alpine.js", "Flask", "Python"],
+  },
+  {
+    company: "Personal Software Development",
+    role: "Frontend Developer and Tool Builder",
+    period: "Ongoing",
+    location: "Independent",
+    description:
+      "Building web applications, developer tools, and open-source projects that combine practical workflows with focused interface design.",
+    achievements: [
+      "Created Payday Splitter, a responsive payroll and budgeting calculator based on Philippine statutory deductions.",
+      "Published Agent Memory Vault, a zero-dependency NPM package for persistent local memory in AI coding workflows.",
+      "Built responsive interfaces with attention to typography, accessibility, mobile layouts, and clear information hierarchy.",
+      "Maintained project documentation, screenshots, deployment links, and source repositories for independent work.",
+    ],
+    technologies: ["Vue 3", "TypeScript", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Vercel", "NPM"],
+  },
+  {
+    company: "TESDA NC II Training",
+    role: "Computer Systems Servicing Trainee",
+    period: "Completed",
+    location: "Philippines",
+    description:
+      "Completed practical training in computer systems servicing, with hands-on experience assembling, maintaining, and diagnosing desktop computer systems.",
+    achievements: [
+      "Assembled and disassembled desktop computer systems while following safe hardware handling procedures.",
+      "Diagnosed common hardware and software issues using systematic troubleshooting steps.",
+      "Installed and configured operating systems, drivers, and essential system software.",
+      "Used common computer servicing tools for inspection, maintenance, replacement, and repair tasks.",
+    ],
+    technologies: ["Computer Hardware", "Diagnostics", "System Assembly", "OS Installation", "Preventive Maintenance"],
   },
 ];
 
 export const education: EducationItem[] = [
   {
-    institution: "Technological University of the Philippines",
+    institution: "Global Reciprocal Colleges Caloocan",
     degree: "Bachelor of Science",
-    field: "Computer Science",
-    period: "2017 — 2021",
+    field: "Information Technology",
+    period: "2023 — 2027",
     location: "Manila, Philippines",
-    honors: "Magna Cum Laude",
     description:
-      "Specialized in Software Engineering, Human-Computer Interaction, and Distributed Systems.",
+      "Pursuing Information Technology with a focus on web application development, interface design, and practical software engineering.",
     highlights: [
-      "Graduated Magna Cum Laude with Departmental Academic Distinction.",
-      "Lead Developer for university automated portal migration.",
-      "Specialized coursework in Advanced Algorithms, UI Systems, and Distributed Computing.",
+      "Developed a 360-degree evaluation system with automated reporting and NLP-assisted feedback analysis.",
+      "Built practical web projects involving payroll planning, responsive interfaces, and data-driven workflows.",
+      "Continuing to strengthen skills in frontend development, accessibility, and maintainable software architecture.",
     ],
+  },
+  {
+    institution: "AMA Computer College Caloocan",
+    strand: "Technical Vocational Livelihood",
+    period: "2020 — 2022",
+    location: "Manila, Philippines",
+    description:
+      "Completed the Technical Vocational Livelihood strand and developed an early foundation in computer use, problem solving, and technology-oriented work.",
+  },
+  {
+    institution: "Potrero National High School",
+    period: "2016 — 2020",
+    location: "Manila, Philippines",
+  },
+  {
+    institution: "Andres Bonifcatio Elementary School",
+    period: "2010 — 2016",
+    location: "Manila, Philippines",
   },
 ];
 
 export const certifications: CertificationItem[] = [
   {
-    title: "Meta Certified Frontend Developer",
-    issuer: "Meta",
-    issueDate: "2023",
+    title: "Computer Systems Servicing NC II",
+    issuer: "Technical Education and Skills Development Authority (TESDA)",
+    issueDate: "NC II Certificate",
     description:
-      "Advanced certification covering modern React/Vue architectures, accessibility, and web ergonomics.",
-    skills: ["Vue", "React", "State Management", "Accessibility (a11y)"],
-    credentialId: "META-FE-98421",
-    credentialUrl: "https://coursera.org",
-    image: getCertificateImage("placeholder_image.png"),
-  },
-  {
-    title: "TypeScript Professional Certification",
-    issuer: "TypeScript Institute",
-    issueDate: "2022",
-    description:
-      "Deep-dive credential on static type analysis, AST manipulation, and generative types.",
-    skills: ["TypeScript", "Generics", "Type Systems", "Compiler API"],
-    credentialId: "TS-PRO-44219",
-    credentialUrl: "https://typescriptlang.org",
-    image: getCertificateImage("placeholder_image.png"),
-  },
-  {
-    title: "AWS Certified Cloud Practitioner",
-    issuer: "Amazon Web Services",
-    issueDate: "2022",
-    description:
-      "Foundational architecture, security models, and cloud deployment pipelines on AWS infrastructure.",
-    skills: ["AWS", "S3", "CloudFront", "Serverless"],
-    credentialId: "AWS-CCP-10924",
-    credentialUrl: "https://aws.amazon.com",
+      "National certification covering computer hardware servicing, system assembly, installation, configuration, maintenance, and basic troubleshooting.",
+    skills: [
+      "Computer Assembly",
+      "Hardware Diagnostics",
+      "Operating System Installation",
+      "Preventive Maintenance",
+    ],
     image: getCertificateImage("placeholder_image.png"),
   },
 ];

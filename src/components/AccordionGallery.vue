@@ -74,6 +74,10 @@ const panelRefs = ref<(HTMLElement | null)[]>([]);
 const mediaRefs = ref<(HTMLElement | null)[]>([]);
 const barRefs = ref<(HTMLElement | null)[]>([]);
 const textRefs = ref<(HTMLElement | null)[]>([]);
+const previewIndex = ref<number | null>(null);
+const previewItem = computed(() =>
+    previewIndex.value === null ? null : props.items[previewIndex.value],
+);
 
 const setPanelRef = (
     el: Element | ComponentPublicInstance | null,
@@ -242,6 +246,7 @@ onMounted(() => {
 onUnmounted(() => {
     ro?.disconnect();
     tl?.kill();
+    window.removeEventListener("keydown", handlePreviewKeyDown);
 });
 
 // Re-measure (and re-layout) whenever the container's own sizing inputs change.
@@ -276,8 +281,28 @@ const handleClick = (i: number, e: MouseEvent) => {
     if (i !== active.value) {
         e.preventDefault();
         active.value = i;
+        return;
+    }
+
+    if (!props.items[i].link) {
+        e.preventDefault();
+        previewIndex.value = i;
     }
 };
+
+const closePreview = () => {
+    previewIndex.value = null;
+};
+
+const handlePreviewKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && previewIndex.value !== null) {
+        closePreview();
+    }
+};
+
+onMounted(() => {
+    window.addEventListener("keydown", handlePreviewKeyDown);
+});
 
 const handleKeyDown = (i: number, e: KeyboardEvent) => {
     const n = props.items.length;
@@ -347,7 +372,10 @@ const handleKeyDown = (i: number, e: KeyboardEvent) => {
                         :src="item.image"
                         :alt="item.alt || item.label || ''"
                         :draggable="false"
-                        class="block w-full h-full object-cover select-none [-webkit-user-drag:none]"
+                        :class="[
+                            'block w-full h-full select-none [-webkit-user-drag:none]',
+                            i === active ? 'object-contain bg-[#18181B]' : 'object-cover',
+                        ]"
                     />
                 </span>
                 <span
@@ -377,7 +405,10 @@ const handleKeyDown = (i: number, e: KeyboardEvent) => {
                         (el: Element | ComponentPublicInstance | null) =>
                             setTextRef(el, i)
                     "
-                    class="opacity-0 overflow-hidden font-semibold text-[clamp(1rem,1.4vw,1.4rem)] text-ellipsis tracking-[0.01em] whitespace-nowrap [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]"
+                    :class="[
+                        'opacity-0 overflow-hidden font-semibold text-[clamp(0.75rem,1.05vw,1rem)] tracking-[0.01em] [text-shadow:0_2px_14px_rgba(0,0,0,0.55)]',
+                        vertical ? 'whitespace-normal break-words' : 'text-ellipsis whitespace-nowrap',
+                    ]"
                     :style="{ color: textColor }"
                 >
                     {{ item.label }}
@@ -385,4 +416,52 @@ const handleKeyDown = (i: number, e: KeyboardEvent) => {
             </span>
         </component>
     </div>
+
+    <Teleport to="body">
+        <Transition
+            enter-active-class="transition duration-200 ease-out"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition duration-150 ease-in"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div
+                v-if="previewItem"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 sm:p-8 backdrop-blur-sm"
+                role="dialog"
+                aria-modal="true"
+                :aria-label="previewItem.alt || previewItem.label || 'Image preview'"
+                @click.self="closePreview"
+            >
+                <div
+                    class="relative flex max-h-[90vh] w-full max-w-6xl flex-col overflow-hidden rounded-xl border border-white/15 bg-[#18181B] shadow-2xl"
+                >
+                    <button
+                        type="button"
+                        class="absolute right-3 top-3 z-10 rounded-md bg-black/60 px-3 py-1.5 text-xs font-mono text-white transition-colors hover:bg-black/90"
+                        aria-label="Close image preview"
+                        @click="closePreview"
+                    >
+                        Close <span aria-hidden="true">&times;</span>
+                    </button>
+
+                    <div class="flex min-h-0 flex-1 items-center justify-center p-3 sm:p-6">
+                        <img
+                            :src="previewItem.image"
+                            :alt="previewItem.alt || previewItem.label || ''"
+                            class="max-h-[78vh] max-w-full object-contain"
+                        />
+                    </div>
+
+                    <p
+                        v-if="previewItem.label"
+                        class="border-t border-white/10 px-4 py-3 text-center text-xs font-mono text-white/80"
+                    >
+                        {{ previewItem.label }}
+                    </p>
+                </div>
+            </div>
+        </Transition>
+    </Teleport>
 </template>

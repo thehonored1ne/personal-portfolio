@@ -42,9 +42,17 @@ useStaggerEntrance(container);
                             </h2>
                         </div>
                         <div
+                            v-if="item.degree || item.field || item.strand"
                             class="text-xs font-mono font-medium text-[#27272A]"
                         >
-                            {{ item.degree }} in {{ item.field }}
+                            <template v-if="item.degree">
+                                {{ item.degree }}<span v-if="item.field">
+                                    in {{ item.field }}</span
+                                >
+                            </template>
+                            <template v-else-if="item.strand">
+                                {{ item.strand }}
+                            </template>
                         </div>
                     </div>
 

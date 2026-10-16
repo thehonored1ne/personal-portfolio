@@ -208,14 +208,15 @@ const galleryItems = computed<AccordionGalleryItem[]>(() => {
             </div>
 
             <div
-                class="w-full overflow-hidden rounded-2xl border border-[#E5E5E5] bg-[#0A0A0A] p-2 shadow-xs"
+                class="w-full overflow-hidden rounded-2xl border border-[#E5E5E5] bg-[#F4F4F5] p-2 shadow-xs"
             >
                 <AccordionGallery
                     :items="galleryItems"
-                    :height="440"
+                    orientation="vertical"
+                    :height="360"
                     :radius="14"
                     :gap="10"
-                    :expandRatio="0.54"
+                    :expandRatio="0.58"
                     trigger="hover"
                     :showLabels="true"
                     :grayscale="true"
