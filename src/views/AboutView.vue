@@ -1,20 +1,42 @@
 <script setup lang="ts">
 import { profile, socials } from "@/data/portfolio";
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import { useStaggerEntrance } from "@/composables/useStaggerEntrance";
-import CircularGallery from "@/components/CircularGallery.vue";
-import Img1 from "@/assets/aboutme_images/img1.jpg";
-import Img2 from "@/assets/aboutme_images/img2.jpg";
-import Img3 from "@/assets/aboutme_images/img3.jpg";
-import Img4 from "@/assets/aboutme_images/img4.jpg";
-import Img5 from "@/assets/aboutme_images/img5.jpg";
-import Img6 from "@/assets/aboutme_images/img6.jpg";
-import Img7 from "@/assets/aboutme_images/img7.jpg";
+import Img1 from "@/assets/aboutme_images/img1.webp";
+import Img2 from "@/assets/aboutme_images/img2.webp";
+import Img3 from "@/assets/aboutme_images/img3.webp";
+import Img4 from "@/assets/aboutme_images/img4.webp";
+import Img5 from "@/assets/aboutme_images/img5.webp";
+import Img6 from "@/assets/aboutme_images/img6.webp";
+import Img7 from "@/assets/aboutme_images/img7.webp";
 import Img8 from "@/assets/aboutme_images/avatar.webp";
 
 const container = ref<HTMLElement | null>(null);
+const gallerySection = ref<HTMLElement | null>(null);
+const galleryReady = ref(false);
+const CircularGallery = defineAsyncComponent(
+    () => import("@/components/CircularGallery.vue"),
+);
 useStaggerEntrance(container);
+
+let galleryObserver: IntersectionObserver | undefined;
+
+onMounted(() => {
+    if (!gallerySection.value) return;
+
+    galleryObserver = new IntersectionObserver(
+        ([entry]) => {
+            if (!entry?.isIntersecting) return;
+            galleryReady.value = true;
+            galleryObserver?.disconnect();
+        },
+        { rootMargin: "300px 0px" },
+    );
+    galleryObserver.observe(gallerySection.value);
+});
+
+onBeforeUnmount(() => galleryObserver?.disconnect());
 
 const currentActivities = [
     {
@@ -97,9 +119,14 @@ const aboutGalleryItems = [
             </p>
         </header>
 
-        <section data-animate class="-mx-2 sm:-mx-6 space-y-3">
+        <section
+            ref="gallerySection"
+            data-animate
+            class="-mx-2 sm:-mx-6 space-y-3"
+        >
             <div class="h-[280px] sm:h-[360px] w-full">
                 <CircularGallery
+                    v-if="galleryReady"
                     :items="aboutGalleryItems"
                     :bend="2"
                     text-color="#121212"
@@ -108,6 +135,11 @@ const aboutGalleryItems = [
                     :scroll-speed="2"
                     :scroll-ease="0.06"
                 />
+                <div
+                    v-else
+                    class="h-full w-full rounded border border-[#E5E5E5] bg-[#F4F4F5]"
+                    aria-label="Loading photo gallery"
+                ></div>
             </div>
         </section>
 
