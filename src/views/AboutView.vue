@@ -140,13 +140,17 @@ const aboutGalleryItems = [
                     class="h-full w-full rounded border border-[#E5E5E5] bg-[#F4F4F5]"
                     aria-label="Loading photo gallery"
                 ></div>
+                <p class="sr-only">
+                    Photo gallery of Dion Areglo:
+                    {{ aboutGalleryItems.map((item) => item.text).join(", ") }}.
+                </p>
             </div>
         </section>
 
         <!-- Bio / Story -->
         <section
             data-animate
-            class="space-y-3.5 text-sm text-[#404040] leading-relaxed text-justify"
+            class="space-y-3.5 max-w-prose text-[15px] text-[#404040] leading-relaxed"
         >
             <p>
                 I'm {{ profile.name }}, a
@@ -197,7 +201,7 @@ const aboutGalleryItems = [
                         {{ item.label }}
                     </span>
                     <p
-                        class="text-xs text-[#404040] leading-relaxed sm:col-span-3 text-justify"
+                        class="text-[13px] text-[#404040] leading-relaxed sm:col-span-3"
                     >
                         {{ item.detail }}
                     </p>
@@ -226,7 +230,7 @@ const aboutGalleryItems = [
                         {{ principle.title }}
                     </div>
                     <p
-                        class="text-xs text-[#404040] leading-relaxed text-justify"
+                        class="text-[13px] text-[#404040] leading-relaxed"
                     >
                         {{ principle.description }}
                     </p>
@@ -263,7 +267,7 @@ const aboutGalleryItems = [
             >
                 Keep in touch
             </div>
-            <p class="text-xs text-[#404040] leading-relaxed text-justify">
+            <p class="text-[13px] text-[#404040] leading-relaxed">
                 Feel free to reach out for collaborations, project inquiries, or
                 discussion:
             </p>

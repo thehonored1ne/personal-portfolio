@@ -8,7 +8,7 @@ import ContactView from "@/views/ContactView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import { projects } from "@/data/portfolio";
 
-const siteUrl = "https://dionareglo.dev";
+const siteUrl = "https://dion-personalportfolio.vercel.app";
 const defaultDescription =
   "Portfolio of Dion Areglo, a Frontend Engineer and Interface Designer based in Manila, Philippines.";
 
@@ -108,8 +108,17 @@ router.afterEach((to) => {
   setMeta('meta[name="twitter:url"]', "content", canonicalUrl);
   setMeta('meta[name="twitter:image"]', "content", `${siteUrl}/og-image.webp`);
 
-  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-  if (canonical) canonical.setAttribute("href", canonicalUrl);
+  let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+  if (to.meta.noIndex) {
+    canonical?.remove();
+  } else {
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", canonicalUrl);
+  }
 });
 
 export default router;

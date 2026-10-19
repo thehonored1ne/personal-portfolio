@@ -73,7 +73,7 @@ useStaggerEntrance(container);
                 <!-- Degree Overview Narrative -->
                 <p
                     v-if="item.description"
-                    class="text-xs sm:text-sm text-[#3F3F46] leading-relaxed text-justify"
+                    class="text-[15px] text-[#3F3F46] leading-relaxed max-w-prose"
                 >
                     {{ item.description }}
                 </p>
@@ -93,7 +93,7 @@ useStaggerEntrance(container);
                             v-for="h in item.highlights"
                             :key="h"
                             data-animate
-                            class="flex items-start gap-2.5 text-xs sm:text-[13px] text-[#3F3F46] leading-relaxed text-justify"
+                            class="flex items-start gap-2.5 text-[14px] text-[#3F3F46] leading-relaxed"
                         >
                             <span
                                 class="w-1.5 h-1.5 rounded-full bg-[#121212] mt-2 shrink-0"

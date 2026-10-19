@@ -244,6 +244,13 @@ class Title {
     this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeightScaled * 0.5 - 0.05;
     this.mesh.setParent(this.plane);
   }
+
+  remove() {
+    const texture = this.mesh.program.uniforms.tMap?.value as Texture | undefined;
+    if (texture) this.gl.deleteTexture(texture.texture);
+    this.mesh.geometry.remove();
+    this.mesh.program.remove();
+  }
 }
 
 interface ScreenSize {
@@ -292,6 +299,7 @@ class Media {
   program!: Program;
   plane!: Mesh;
   title!: Title;
+  texture!: Texture;
   scale!: number;
   padding!: number;
   width!: number;
@@ -341,6 +349,7 @@ class Media {
     const texture = new Texture(this.gl, {
       generateMipmaps: true
     });
+    this.texture = texture;
     this.program = new Program(this.gl, {
       depthTest: false,
       depthWrite: false,
@@ -430,7 +439,7 @@ class Media {
     });
   }
 
-  update(scroll: { current: number; last: number }, direction: 'right' | 'left') {
+  update(scroll: { current: number; last: number }, direction: 'right' | 'left', speed: number) {
     this.plane.position.x = this.x - scroll.current - this.extra;
 
     const x = this.plane.position.x;
@@ -454,9 +463,9 @@ class Media {
       }
     }
 
-    this.speed = scroll.current - scroll.last;
+    this.speed = speed;
     this.program.uniforms.uTime.value += 0.04;
-    this.program.uniforms.uSpeed.value = this.speed;
+    this.program.uniforms.uSpeed.value = speed;
 
     const planeOffset = this.plane.scale.x / 2;
     const viewportOffset = this.viewport.width / 2;
@@ -470,6 +479,12 @@ class Media {
       this.extra += this.widthTotal;
       this.isBefore = this.isAfter = false;
     }
+  }
+
+  remove() {
+    this.title?.remove();
+    this.program?.remove();
+    if (this.texture) this.gl.deleteTexture(this.texture.texture);
   }
 
   onResize({ screen, viewport }: { screen?: ScreenSize; viewport?: Viewport } = {}) {
@@ -522,8 +537,13 @@ class App {
   screen!: { width: number; height: number };
   viewport!: { width: number; height: number };
   raf: number = 0;
+  resizeRaf: number = 0;
+  isRunning: boolean = false;
+  isIntersecting: boolean = true;
+  intersectionObserver?: IntersectionObserver;
 
   boundOnResize!: () => void;
+  boundOnVisibility!: () => void;
   boundOnWheel!: (e: Event) => void;
   boundOnTouchDown!: (e: MouseEvent | TouchEvent) => void;
   boundOnTouchMove!: (e: MouseEvent | TouchEvent) => void;
@@ -555,15 +575,47 @@ class App {
     this.onResize();
     this.createGeometry();
     this.createMedias(items, bend, textColor, borderRadius, font);
-    this.update();
+    this.update = this.update.bind(this);
     this.addEventListeners();
+    this.setupObservers();
+    this.startLoop();
+  }
+
+  setupObservers() {
+    if (typeof IntersectionObserver !== 'undefined') {
+      this.intersectionObserver = new IntersectionObserver(entries => {
+        this.isIntersecting = entries[0]?.isIntersecting ?? true;
+        if (this.isIntersecting) this.startLoop();
+        else this.stopLoop();
+      });
+      this.intersectionObserver.observe(this.container);
+    }
+    this.boundOnVisibility = this.onVisibilityChange.bind(this);
+    document.addEventListener('visibilitychange', this.boundOnVisibility);
+  }
+
+  onVisibilityChange() {
+    if (document.hidden) this.stopLoop();
+    else if (this.isIntersecting) this.startLoop();
+  }
+
+  startLoop() {
+    if (this.isRunning || document.hidden || !this.isIntersecting) return;
+    this.isRunning = true;
+    this.raf = window.requestAnimationFrame(this.update);
+  }
+
+  stopLoop() {
+    if (!this.isRunning) return;
+    this.isRunning = false;
+    window.cancelAnimationFrame(this.raf);
   }
 
   createRenderer() {
     this.renderer = new Renderer({
       alpha: true,
-      antialias: true,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      antialias: false,
+      dpr: Math.min(window.devicePixelRatio || 1, 1.5)
     });
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
@@ -582,8 +634,8 @@ class App {
 
   createGeometry() {
     this.planeGeometry = new Plane(this.gl, {
-      heightSegments: 50,
-      widthSegments: 100
+      heightSegments: 20,
+      widthSegments: 40
     });
   }
 
@@ -631,9 +683,14 @@ class App {
   }
 
   onTouchDown(e: MouseEvent | TouchEvent) {
+    if (!(e.target instanceof Node) || !this.container.contains(e.target)) return;
     this.isDown = true;
     this.scroll.position = this.scroll.current;
     this.start = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    window.addEventListener('mousemove', this.boundOnTouchMove);
+    window.addEventListener('mouseup', this.boundOnTouchUp);
+    window.addEventListener('touchmove', this.boundOnTouchMove);
+    window.addEventListener('touchend', this.boundOnTouchUp);
   }
 
   onTouchMove(e: MouseEvent | TouchEvent) {
@@ -644,8 +701,13 @@ class App {
   }
 
   onTouchUp() {
+    if (!this.isDown) return;
     this.isDown = false;
     this.onCheck();
+    window.removeEventListener('mousemove', this.boundOnTouchMove);
+    window.removeEventListener('mouseup', this.boundOnTouchUp);
+    window.removeEventListener('touchmove', this.boundOnTouchMove);
+    window.removeEventListener('touchend', this.boundOnTouchUp);
   }
 
   onWheel(e: Event) {
@@ -687,16 +749,17 @@ class App {
   update() {
     this.scroll.current = lerp(this.scroll.current, this.scroll.target, this.scroll.ease);
     const direction = this.scroll.current > this.scroll.last ? 'right' : 'left';
+    const speed = this.scroll.current - this.scroll.last;
     if (this.medias) {
-      this.medias.forEach(media => media.update(this.scroll, direction));
+      this.medias.forEach(media => media.update(this.scroll, direction, speed));
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
-    this.raf = window.requestAnimationFrame(this.update.bind(this));
+    this.raf = window.requestAnimationFrame(this.update);
   }
 
   addEventListeners() {
-    this.boundOnResize = this.onResize.bind(this);
+    this.boundOnResize = this.handleResize.bind(this);
     this.boundOnWheel = this.onWheel.bind(this);
     this.boundOnTouchDown = this.onTouchDown.bind(this);
     this.boundOnTouchMove = this.onTouchMove.bind(this);
@@ -705,15 +768,26 @@ class App {
     window.addEventListener('mousewheel', this.boundOnWheel);
     window.addEventListener('wheel', this.boundOnWheel);
     window.addEventListener('mousedown', this.boundOnTouchDown);
-    window.addEventListener('mousemove', this.boundOnTouchMove);
-    window.addEventListener('mouseup', this.boundOnTouchUp);
     window.addEventListener('touchstart', this.boundOnTouchDown);
-    window.addEventListener('touchmove', this.boundOnTouchMove);
-    window.addEventListener('touchend', this.boundOnTouchUp);
+  }
+
+  handleResize() {
+    if (this.resizeRaf) return;
+    this.resizeRaf = window.requestAnimationFrame(() => {
+      this.resizeRaf = 0;
+      this.onResize();
+    });
   }
 
   destroy() {
-    window.cancelAnimationFrame(this.raf);
+    this.stopLoop();
+    window.cancelAnimationFrame(this.resizeRaf);
+    this.resizeRaf = 0;
+    this.intersectionObserver?.disconnect();
+    this.intersectionObserver = undefined;
+    if (this.boundOnVisibility) {
+      document.removeEventListener('visibilitychange', this.boundOnVisibility);
+    }
     window.removeEventListener('resize', this.boundOnResize);
     window.removeEventListener('mousewheel', this.boundOnWheel);
     window.removeEventListener('wheel', this.boundOnWheel);
@@ -723,6 +797,9 @@ class App {
     window.removeEventListener('touchstart', this.boundOnTouchDown);
     window.removeEventListener('touchmove', this.boundOnTouchMove);
     window.removeEventListener('touchend', this.boundOnTouchUp);
+    this.medias.forEach(media => media.remove());
+    this.medias = [];
+    this.planeGeometry?.remove();
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas as HTMLCanvasElement);
     }
@@ -789,8 +866,7 @@ watch(
         scrollEase: newProps.scrollEase
       });
     });
-  },
-  { deep: true }
+  }
 );
 </script>
 

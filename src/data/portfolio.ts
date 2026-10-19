@@ -92,7 +92,8 @@ const projectImageData: Record<string, ProjectImageEntry[]> = {
     },
     {
       file: "payday-splitter/cuts-nethome.webp",
-      caption: "Net take-home summary with statutory deductions and bonus insight",
+      caption:
+        "Net take-home summary with statutory deductions and bonus insight",
     },
     {
       file: "payday-splitter/mobile-view.webp",
@@ -293,7 +294,14 @@ export const experience: ExperienceItem[] = [
       "Connected a Laravel and Livewire application with a Python NLP service for written feedback analysis.",
       "Worked across development, testing, documentation, and project presentation responsibilities.",
     ],
-    technologies: ["Laravel", "Livewire", "Tailwind CSS", "Alpine.js", "Flask", "Python"],
+    technologies: [
+      "Laravel",
+      "Livewire",
+      "Tailwind CSS",
+      "Alpine.js",
+      "Flask",
+      "Python",
+    ],
   },
   {
     company: "Personal Software Development",
@@ -308,7 +316,16 @@ export const experience: ExperienceItem[] = [
       "Built responsive interfaces with attention to typography, accessibility, mobile layouts, and clear information hierarchy.",
       "Maintained project documentation, screenshots, deployment links, and source repositories for independent work.",
     ],
-    technologies: ["Vue 3", "TypeScript", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Vercel", "NPM"],
+    technologies: [
+      "Vue 3",
+      "TypeScript",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "Tailwind CSS",
+      "Vercel",
+      "NPM",
+    ],
   },
   {
     company: "TESDA NC II Training",
@@ -323,7 +340,13 @@ export const experience: ExperienceItem[] = [
       "Installed and configured operating systems, drivers, and essential system software.",
       "Used common computer servicing tools for inspection, maintenance, replacement, and repair tasks.",
     ],
-    technologies: ["Computer Hardware", "Diagnostics", "System Assembly", "OS Installation", "Preventive Maintenance"],
+    technologies: [
+      "Computer Hardware",
+      "Diagnostics",
+      "System Assembly",
+      "OS Installation",
+      "Preventive Maintenance",
+    ],
   },
 ];
 
@@ -365,7 +388,7 @@ export const education: EducationItem[] = [
 export const certifications: CertificationItem[] = [
   {
     title: "Computer Systems Servicing NC II",
-    issuer: "Technical Education and Skills Development Authority (TESDA)",
+    issuer: "TESDA",
     issueDate: "NC II Certificate",
     description:
       "National certification covering computer hardware servicing, system assembly, installation, configuration, maintenance, and basic troubleshooting.",
@@ -380,8 +403,8 @@ export const certifications: CertificationItem[] = [
 ];
 
 export const socials: SocialLink[] = [
-  { label: "GitHub", href: "https://github.com/dionareglo" },
+  { label: "GitHub", href: "https://github.com/thehonored1ne" },
   { label: "LinkedIn", href: "https://linkedin.com/in/dionareglo" },
-  { label: "Facebook", href: "https://facebook.com/dionareglo" },
-  { label: "Email", href: "mailto:dion@example.com" },
+  { label: "Facebook", href: "https://www.facebook.com/dion.areglo.1" },
+  { label: "Email", href: "mailto:dion.areglo1234@gmail.com" },
 ];

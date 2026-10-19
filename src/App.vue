@@ -11,24 +11,24 @@ const isNavigatingByScroll = ref(false);
 const pageRoutes = ["home", "about", "experience", "education", "certifications", "contact"];
 let touchStartY = 0;
 let touchStartedInScrollableElement = false;
-let bottomBoundaryArmed = false;
-let topBoundaryArmed = false;
-let pageResizeObserver: ResizeObserver | undefined;
-const mainContent = ref<HTMLElement | null>(null);
+let lastWheelAt = 0;
 
-const isAtTop = () => window.scrollY <= 0;
+// A boundary only navigates on a fresh wheel gesture, so momentum/rapid
+// scrolling that just reached the edge doesn't immediately change the page.
+const WHEEL_GESTURE_GAP_MS = 160;
+
+const isAtTop = () => window.scrollY <= 1;
 const isAtBottom = () =>
-    window.innerHeight + window.scrollY >= document.documentElement.scrollHeight;
-
-const handleScroll = () => {
-    topBoundaryArmed = isAtTop();
-    bottomBoundaryArmed = isAtBottom();
-};
+    window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
 
 const isInsideScrollableElement = (target: EventTarget | null, deltaY = 0) => {
     let element = target instanceof HTMLElement ? target : null;
 
-    while (element && element !== document.body) {
+    while (
+        element &&
+        element !== document.body &&
+        element !== document.documentElement
+    ) {
         const styles = window.getComputedStyle(element);
         const canScroll =
             (styles.overflowY === "auto" || styles.overflowY === "scroll") &&
@@ -69,16 +69,19 @@ const navigateAtBoundary = (direction: "next" | "previous") => {
 
 const handleWheel = (event: WheelEvent) => {
     if (Math.abs(event.deltaY) < 12) return;
-    // Nested scroll areas own the gesture completely. Their wheel events must
-    // never bubble into the page-level route navigation handler.
-    if (isInsideScrollableElement(event.target)) return;
-    if (event.deltaY > 0 && bottomBoundaryArmed) {
-        bottomBoundaryArmed = false;
-        navigateAtBoundary("next");
-    }
-    if (event.deltaY < 0 && topBoundaryArmed) {
-        topBoundaryArmed = false;
-        navigateAtBoundary("previous");
+    // A nested scroll area only owns the gesture while it can still scroll in
+    // the wheel's direction. Once it reaches its own boundary the page-level
+    // route navigation takes over instead of the event being swallowed.
+    if (isInsideScrollableElement(event.target, event.deltaY)) return;
+
+    const now = performance.now();
+    const isNewGesture = now - lastWheelAt > WHEEL_GESTURE_GAP_MS;
+    lastWheelAt = now;
+
+    if (event.deltaY > 0 && isAtBottom()) {
+        if (isNewGesture) navigateAtBoundary("next");
+    } else if (event.deltaY < 0 && isAtTop()) {
+        if (isNewGesture) navigateAtBoundary("previous");
     }
 };
 
@@ -92,23 +95,14 @@ const handleTouchEnd = (event: TouchEvent) => {
     const touchEndY = event.changedTouches[0]?.clientY ?? touchStartY;
     const distance = touchStartY - touchEndY;
     if (Math.abs(distance) < 55) return;
-    if (distance > 0 && bottomBoundaryArmed) {
-        bottomBoundaryArmed = false;
+    if (distance > 0 && isAtBottom()) {
         navigateAtBoundary("next");
-    }
-    if (distance < 0 && topBoundaryArmed) {
-        topBoundaryArmed = false;
+    } else if (distance < 0 && isAtTop()) {
         navigateAtBoundary("previous");
     }
 };
 
 onMounted(() => {
-    handleScroll();
-    if (mainContent.value) {
-        pageResizeObserver = new ResizeObserver(() => handleScroll());
-        pageResizeObserver.observe(mainContent.value);
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("wheel", handleWheel, { passive: true });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
@@ -117,18 +111,12 @@ onMounted(() => {
 watch(
     () => route.fullPath,
     async () => {
-        // Reset route-specific boundary state before measuring the new page.
-        topBoundaryArmed = false;
-        bottomBoundaryArmed = false;
         await nextTick();
-        handleScroll();
         isNavigatingByScroll.value = false;
     },
 );
 
 onBeforeUnmount(() => {
-    pageResizeObserver?.disconnect();
-    window.removeEventListener("scroll", handleScroll);
     window.removeEventListener("wheel", handleWheel);
     window.removeEventListener("touchstart", handleTouchStart);
     window.removeEventListener("touchend", handleTouchEnd);
@@ -144,7 +132,6 @@ onBeforeUnmount(() => {
 
         <!-- Main Content Shell -->
         <main
-            ref="mainContent"
             class="flex-1 max-w-5xl w-full mx-auto px-6 sm:px-12 py-8 sm:py-14"
         >
             <RouterView />

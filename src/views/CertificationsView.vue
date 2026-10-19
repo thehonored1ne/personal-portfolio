@@ -66,16 +66,18 @@ const getIssuerLogo = (issuer: string) => {
                 class="p-5 sm:p-6 rounded-2xl border border-[#E5E5E5] bg-white space-y-4 hover:border-[#121212] transition-all shadow-2xs group"
             >
                 <!-- Header with Issuer Badge & Title -->
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-start gap-3.5 min-w-0">
+                <div
+                    class="flex flex-col gap-2.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                >
+                    <div class="flex items-start gap-3 sm:gap-3.5 min-w-0">
                         <!-- Issuer Official Icon Badge -->
                         <div
-                            class="w-12 h-12 rounded-xl bg-[#F4F4F5] border border-[#E5E5E5] flex items-center justify-center shrink-0 p-1.5 group-hover:border-[#121212] transition-colors"
+                            class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#F4F4F5] border border-[#E5E5E5] flex items-center justify-center shrink-0 p-1.5 group-hover:border-[#121212] transition-colors"
                         >
                             <img
                                 v-if="cert.issuer.includes('TESDA')"
                                 :src="tesdaLogo"
-                                alt="TESDA"
+                                alt="TESDA certification issuer logo"
                                 class="w-full h-full object-contain scale-125"
                             />
 
@@ -136,11 +138,13 @@ const getIssuerLogo = (issuer: string) => {
                         <!-- Title & Subtitle -->
                         <div class="space-y-0.5 min-w-0">
                             <h2
-                                class="text-base sm:text-lg font-bold text-[#121212] tracking-tight group-hover:text-black"
+                                class="text-base sm:text-lg font-bold text-[#121212] tracking-tight group-hover:text-black break-words"
                             >
                                 {{ cert.title }}
                             </h2>
-                            <div class="text-xs font-mono text-[#52525B]">
+                            <div
+                                class="text-xs font-mono text-[#52525B] leading-relaxed break-words"
+                            >
                                 Issued by
                                 <span class="font-semibold text-[#121212]">
                                     {{ cert.issuer }}
@@ -150,7 +154,9 @@ const getIssuerLogo = (issuer: string) => {
                     </div>
 
                     <!-- Year -->
-                    <div class="text-xs font-mono text-[#A1A1AA] shrink-0 pt-1">
+                    <div
+                        class="self-start text-[11px] sm:text-xs font-mono text-[#52525B] sm:text-[#A1A1AA] shrink-0 px-2 py-0.5 rounded-md bg-[#F4F4F5] border border-[#E5E5E5] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:pt-1"
+                    >
                         {{ cert.issueDate }}
                     </div>
                 </div>
@@ -158,7 +164,7 @@ const getIssuerLogo = (issuer: string) => {
                 <!-- Description -->
                 <p
                     v-if="cert.description"
-                    class="text-xs sm:text-[13px] text-[#404040] leading-relaxed"
+                    class="text-[15px] text-[#404040] leading-relaxed"
                 >
                     {{ cert.description }}
                 </p>
@@ -213,9 +219,9 @@ const getIssuerLogo = (issuer: string) => {
                             v-if="cert.image"
                             type="button"
                             @click="openCertModal(cert)"
-                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-[#121212] bg-[#F4F4F5] border border-[#E5E5E5] hover:bg-white hover:border-[#121212] transition-all cursor-pointer shadow-2xs"
+                            class="inline-flex items-center gap-1.5 px-1.5 py-1 -mx-1.5 rounded-md text-[11px] font-mono text-[#52525B] hover:text-[#121212] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
                         >
-                            <Eye class="w-3.5 h-3.5 text-[#71717A]" />
+                            <Eye class="w-3.5 h-3.5" />
                             <span>View Certificate</span>
                         </button>
 

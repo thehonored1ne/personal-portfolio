@@ -1,52 +1,52 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dionareglo.dev/</loc>
+    <loc>https://dion-personalportfolio.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/about</loc>
+    <loc>https://dion-personalportfolio.vercel.app/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/experience</loc>
+    <loc>https://dion-personalportfolio.vercel.app/experience</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/education</loc>
+    <loc>https://dion-personalportfolio.vercel.app/education</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/certifications</loc>
+    <loc>https://dion-personalportfolio.vercel.app/certifications</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/contact</loc>
+    <loc>https://dion-personalportfolio.vercel.app/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/projects/linear-ui-clone</loc>
+    <loc>https://dion-personalportfolio.vercel.app/project/360-evaluation-system</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/projects/oxide-syntax</loc>
+    <loc>https://dion-personalportfolio.vercel.app/project/memory-vault</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/projects/tokens-engine</loc>
+    <loc>https://dion-personalportfolio.vercel.app/project/payday-splitter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dionareglo.dev/projects/typewriter</loc>
+    <loc>https://dion-personalportfolio.vercel.app/project/typewriter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

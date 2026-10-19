@@ -77,7 +77,7 @@ const filteredProjects = computed(() => {
         >
             <img
                 :src="profile.banner"
-                alt="Cover Banner"
+                alt="Dion Areglo profile cover banner"
                 class="w-full h-full object-cover block"
                 loading="eager"
             />
@@ -150,7 +150,7 @@ const filteredProjects = computed(() => {
 
                 <!-- Bio Paragraph -->
                 <p
-                    class="text-xs sm:text-sm text-[#404040] leading-relaxed max-w-sm mx-auto text-justify"
+                    class="text-[15px] text-[#404040] leading-relaxed max-w-sm mx-auto"
                 >
                     {{ profile.bio }}
                 </p>
